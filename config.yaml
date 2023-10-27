@@ -1,0 +1,19 @@
+email:
+  sender: sender@gmail.com
+  password: xxxx xxxx xxxx xxxx
+  receiver: receiver@gmail.com
+
+urls:
+- city: calgary
+  url: https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment/days/89.json?appointments\[expedite\]=false
+
+- city: vancouver
+  url: https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment/days/95.json?appointments\[expedite\]=false
+
+dates:
+  start_date: 12-09-2023
+  end_date: 12-30-2023
+
+ais_credentials:
+  email: username
+  password: "&9Z5WiD?yNHJ7tA"
