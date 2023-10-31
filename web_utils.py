@@ -158,7 +158,9 @@ def try_once_free_account(payment_url, csrf_token, yatri_session_cookie):
         if city_name not in url_dict:
             continue
         date_dict[city_name] = earlist_available_date
-
+    if len(date_dict) == 0:
+        log(f'Access banned.')
+        return False
     for city_name, earlist_available_date in date_dict.items():
         log(f'{city_name}: {earlist_available_date.strftime("%Y-%m-%d")}')
         if check_good_date(earlist_available_date):
