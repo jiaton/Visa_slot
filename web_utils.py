@@ -33,11 +33,9 @@ def get_headers(yatri_session_cookie, csrf_token):
     'X-CSRF-Token': f'{csrf_token}'
     }
     return headers
-def login():
+def login(login_email, login_password):
     print('login...')
     url = "https://ais.usvisa-info.com/en-ca/niv/users/sign_in"
-    login_email = load_config()()['login_email']
-    login_password = load_config()()['login_password']
     payload = f"user%5Bemail%5D={urllib.parse.quote(login_email)}&user%5Bpassword%5D={urllib.parse.quote(login_password)}&policy_confirmed=1&commit=Sign+In"
     headers = {
         'Accept': '*/*;q=0.5, text/javascript, application/javascript, application/ecmascript, application/x-ecmascript',
@@ -91,8 +89,12 @@ def get_cstf(session):
     soup = BeautifulSoup(response.content, 'html.parser')
     csrf_token = soup.find('meta', {'name': 'csrf-token'})['content']
     return csrf_token
-
-def try_once(url, place, csrf_token, yatri_session_cookie):
+def check_good_date(date):
+    start_date = datetime.strptime(load_config()()['start_date'], '%m-%d-%Y')
+    end_date = datetime.strptime(load_config()()['end_date'], '%m-%d-%Y')
+    if start_date <= date <= end_date:
+        return True
+def try_once_main_account(url, place, csrf_token, yatri_session_cookie):
     payload={}
     # yatri_session_cookie = read_cookie_from_file('cookie.txt')
     headers= get_headers(yatri_session_cookie, csrf_token)
@@ -103,7 +105,8 @@ def try_once(url, place, csrf_token, yatri_session_cookie):
     # print(response.text)
     if "expired" in response.text or "error" in response.text:
         print('cookie expired, need to login')
-        yatri_session_cookie = login()
+        yatri_session_cookie, session = login()
+        csrf_token = get_cstf(session)
         headers= get_headers(yatri_session_cookie, csrf_token)
         response = requests.request("GET", url=url, headers=headers, data=payload)
 
@@ -131,10 +134,58 @@ def try_once(url, place, csrf_token, yatri_session_cookie):
                     f'All good dates: {good_dates}']
         send_email(receiver, contents, f'Found dates available in {place}!!!')
     return True
+
+def try_once_free_account(payment_url, csrf_token, yatri_session_cookie):
+    payload={}
+    # yatri_session_cookie = read_cookie_from_file('cookie.txt')
+    headers= get_headers(yatri_session_cookie, csrf_token)
+    try:
+        response = requests.request("GET", url=payment_url, headers=headers, data=payload)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        table = soup.find('table', {'class': 'for-layout'})
+        rows = table.find_all('tr')
+    except:
+        log(f'Access banned.')
+        return False
+    date_dict = {}
+    url_dict = load_config()()['url_dict']
+    for row in rows:
+        cols = row.find_all('td')
+        cols = [col.text.strip() for col in cols]
+        if 'No Appointments Available' in cols[1]:
+            continue
+        city_name, earlist_available_date = cols[0].lower(), datetime.strptime(cols[1], '%d %B, %Y')
+        if city_name not in url_dict:
+            continue
+        date_dict[city_name] = earlist_available_date
+
+    for city_name, earlist_available_date in date_dict.items():
+        log(f'{city_name}: {earlist_available_date.strftime("%Y-%m-%d")}')
+        if check_good_date(earlist_available_date):
+            log(f'{earlist_available_date} available in {city_name}')
+            receiver = load_config()()['receiver']
+            contents = [f'Found dates available in {city_name}',
+                    f'Earlist available date: {earlist_available_date}'
+                    ]
+            send_email(receiver, contents, f'Found dates available in {city_name}!!!')
+    return date_dict
+        
+    
 if __name__ == '__main__':
-    yatri_session_cookie, session = login()
+    # login_email = load_config()()['login_email']
+    # login_password = load_config()()['login_password']
+    # yatri_session_cookie, session = login()
+    # csrf_token = get_cstf(session)
+    # print(csrf_token)
+    # url_dict = load_config()()['url_dict']
+    # url, place = url_dict['vancouver'], 'vancouver'
+    # try_once_main_account(url, place, csrf_token, yatri_session_cookie)
+    
+    free_account_url = 'https://ais.usvisa-info.com/en-ca/niv/schedule/53027427/payment'
+    login_email = "javzzzzh@gmail.com"
+    login_password = "9VPpcmAaUJowvRa"
+    yatri_session_cookie, session = login(login_email, login_password)
     csrf_token = get_cstf(session)
     print(csrf_token)
-    url_dict = load_config()()['url_dict']
-    url, place = url_dict['vancouver'], 'vancouver'
-    try_once(url, place, csrf_token, yatri_session_cookie)
+    date_dict = try_once_free_account(free_account_url, csrf_token, yatri_session_cookie)
+    print(date_dict)

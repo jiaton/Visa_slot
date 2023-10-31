@@ -32,6 +32,8 @@ def load_config():
             login_email = config['ais_credentials']['email']
             login_password = config['ais_credentials']['password']
             
+            no_payments_account_credentials = config['no_payments_account_credentials']
+              
         return {'sender': sender, 
                 'password': password, 
                 'receiver': receiver, 
@@ -40,6 +42,7 @@ def load_config():
                 'end_date': end_date_str,
                 'login_email': login_email,
                 'login_password': login_password,
+                'no_payments_accounts': no_payments_account_credentials,
                 }
     config_cache = None
     
@@ -49,3 +52,14 @@ def load_config():
             config_cache = read_config()
         return config_cache
     return get_config
+
+def get_account_from_pool():
+    no_payments_accounts = load_config()()['no_payments_accounts']
+    length = len(no_payments_accounts)
+    curr = [0]
+    def generate():
+        ret = no_payments_accounts[curr[0]]
+        curr[0] += 1
+        curr[0] %= length
+        return ret
+    return generate
