@@ -40,9 +40,13 @@ def main(enable_vpn = False):
     #     time.sleep(1)
     
     account_generator = get_account_from_pool()
-    no_payments_account = account_generator()    
-    yatri_session_cookie, session = login(no_payments_account['email'],  no_payments_account['password'])
-    csrf_token = get_cstf(session)
+    no_payments_account = account_generator()
+    try:
+        yatri_session_cookie, session = login(no_payments_account['email'],  no_payments_account['password'])
+        csrf_token = get_cstf(session)
+    except Exception as e:
+        log(f'Failed to login to {no_payments_account}')
+        return
     counts = 20
     while True:
         now = datetime.now()
@@ -55,7 +59,7 @@ def main(enable_vpn = False):
                 yatri_session_cookie, session = login(no_payments_account['email'],  no_payments_account['password'])
                 csrf_token = get_cstf(session)
                 
-            next_interval = (now + timedelta(minutes=1)).replace(microsecond=0)
+            next_interval = (now + timedelta(minutes=5)).replace(microsecond=0)
             log(f'Next try at {next_interval}')
         time.sleep(1)
             

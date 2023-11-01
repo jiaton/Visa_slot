@@ -59,6 +59,7 @@ def get_account_from_pool():
     curr = [0]
     def generate():
         ret = no_payments_accounts[curr[0]]
+        log(f'Generate account {ret["email"]}')
         curr[0] += 1
         curr[0] %= length
         return ret
