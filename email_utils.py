@@ -1,6 +1,6 @@
 import yagmail
 from utils import *
-def send_email(receiver, contents, subject):
+def send_email(receiver, contents, subject, play_sound=False):
     log(f'Sending email to {receiver}')
     sender = load_config()()['sender']
     password = load_config()()['password']

@@ -64,7 +64,7 @@ def login(login_email, login_password):
     yatri_session_cookie = session.cookies.get('_yatri_session')
     # log(f'login cookie: {yatri_session_cookie}')
     # print(yatri_session_cookie)
-    save_cookie_to_file(yatri_session_cookie, 'cookie.txt')
+    # save_cookie_to_file(yatri_session_cookie, 'cookie.txt')
     return yatri_session_cookie, session
 def get_cstf(session):
     url = "https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment"
@@ -137,7 +137,6 @@ def try_once_main_account(url, place, csrf_token, yatri_session_cookie):
 
 def try_once_free_account(payment_url, csrf_token, yatri_session_cookie):
     payload={}
-    # yatri_session_cookie = read_cookie_from_file('cookie.txt')
     headers= get_headers(yatri_session_cookie, csrf_token)
     try:
         response = requests.request("GET", url=payment_url, headers=headers, data=payload)

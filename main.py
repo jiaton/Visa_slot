@@ -60,7 +60,7 @@ def main(enable_vpn = False):
                 csrf_token = get_cstf(session)
                 
             next_interval = (now + timedelta(minutes=5)).replace(microsecond=0)
-            log(f'Next try at {next_interval}')
+            print(f'Next try at {next_interval}')
         time.sleep(1)
             
         
