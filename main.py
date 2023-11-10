@@ -59,7 +59,7 @@ def main(enable_vpn = False):
                 yatri_session_cookie, session = login(no_payments_account['email'],  no_payments_account['password'])
                 csrf_token = get_cstf(session)
                 
-            next_interval = (now + timedelta(minutes=5)).replace(microsecond=0)
+            next_interval = (now + timedelta(minutes=4)).replace(microsecond=0)
             print(f'Next try at {next_interval}')
         time.sleep(1)
             

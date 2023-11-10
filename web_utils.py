@@ -132,7 +132,7 @@ def try_once_main_account(url, place, csrf_token, yatri_session_cookie):
         contents = [f'Found dates available in {place}',
                     f'Earlist available date: {min(dates)}',
                     f'All good dates: {good_dates}']
-        send_email(receiver, contents, f'Found dates available in {place}!!!')
+        send_email(receiver, contents, f'Found dates available in {place}!!!', True)
     return True
 
 def try_once_free_account(payment_url, csrf_token, yatri_session_cookie):
@@ -168,7 +168,7 @@ def try_once_free_account(payment_url, csrf_token, yatri_session_cookie):
             contents = [f'Found dates available in {city_name}',
                     f'Earlist available date: {earlist_available_date}'
                     ]
-            send_email(receiver, contents, f'Found dates available in {city_name}!!!')
+            send_email(receiver, contents, f'Found dates available in {city_name}!!!', True)
     return date_dict
         
     
