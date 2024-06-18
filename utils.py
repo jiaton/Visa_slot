@@ -18,6 +18,7 @@ def load_config():
             sender = config['email']['sender']
             password = config['email']['password']
             receiver = config['email']['receiver']
+            notification_sound_path = config['email']['notification_sound_path']
 
             urls = config['urls']
             url_dict = {}
@@ -43,6 +44,7 @@ def load_config():
                 'login_email': login_email,
                 'login_password': login_password,
                 'no_payments_accounts': no_payments_account_credentials,
+                'notification_sound_path': notification_sound_path
                 }
     config_cache = None
     
