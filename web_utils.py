@@ -7,6 +7,7 @@ import requests
 from local_io import *
 import json
 from datetime import datetime, timedelta
+import re
 
 from utils import *
 
@@ -171,7 +172,43 @@ def try_once_free_account(payment_url, csrf_token, yatri_session_cookie):
                     ]
             send_email(receiver, contents, f'Found dates available in {city_name}!!!')
     return date_dict
-        
+def get_account_id(url):
+    match = re.search(r'/(\d+)/appointment', url)
+    if match:
+        account_id = match.group(1)
+        return account_id
+    else:
+        print('Appointment ID not found in URL')
+        raise Exception('Appointment ID not found in URL')
+def get_city_id(url):
+    match = re.search(r'/(\d+).json', url)
+    if match:
+        city_id = match.group(1)
+        return city_id
+    else:
+        print('City ID not found in URL')
+        raise Exception('City ID not found in URL')
+    
+def schedule(csrf_token, city, date, time):
+    # date in 2024-02-29, time in 07:45
+    availability_url = load_config()()['url_dict'][city]
+    account_id = get_account_id(availability_url)
+    city_id = get_city_id(availability_url)
+    req_url = f'https://ais.usvisa-info.com/en-ca/niv/schedule/{account_id}/appointment'
+    payload=f'authenticity_token={urllib.parse.quote(csrf_token)}&confirmed_limit_message=1&use_consulate_appointment_capacity=true&appointments%5Bconsulate_appointment%5D%5Bfacility_id%5D={city_id}&appointments%5Bconsulate_appointment%5D%5Bdate%5D={date}&appointments%5Bconsulate_appointment%5D%5Btime%5D={urllib.parse.quote(time)}'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'DNT': '1',
+        'Origin': 'https://ais.usvisa-info.com',
+        'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
+        'sec-ch-ua': '" Not A;Brand";v="99", "Chromium";v="102"',
+        'sec-ch-ua-mobile': '?0',
+        'sec-ch-ua-platform': '"Windows"'
+    }
+    response = requests.request("POST", req_url, headers=headers, data=payload)
+    print(response.text)
     
 if __name__ == '__main__':
     # login_email = load_config()()['login_email']
@@ -183,11 +220,18 @@ if __name__ == '__main__':
     # url, place = url_dict['vancouver'], 'vancouver'
     # try_once_main_account(url, place, csrf_token, yatri_session_cookie)
     
-    free_account_url = 'https://ais.usvisa-info.com/en-ca/niv/schedule/53027427/payment'
-    login_email = "javzzzzh@gmail.com"
-    login_password = "9VPpcmAaUJowvRa"
+    # free_account_url = 'https://ais.usvisa-info.com/en-ca/niv/schedule/53027427/payment'
+    # login_email = "someemail@gmail.com"
+    # login_password = "9VPpcmAaUJowvRa"
+    # yatri_session_cookie, session = login(login_email, login_password)
+    # csrf_token = get_cstf(session)
+    # print(csrf_token)
+    # date_dict = try_once_free_account(free_account_url, csrf_token, yatri_session_cookie)
+    # print(date_dict)
+    
+    # execute with caution!!!
+    login_email = load_config()()['login_email']
+    login_password = load_config()()['login_password']
     yatri_session_cookie, session = login(login_email, login_password)
     csrf_token = get_cstf(session)
-    print(csrf_token)
-    date_dict = try_once_free_account(free_account_url, csrf_token, yatri_session_cookie)
-    print(date_dict)
+    schedule(csrf_token, 'vancouver', '2023-01-23', '08:00')

@@ -47,19 +47,18 @@ def main(enable_vpn = False):
     except Exception as e:
         log(f'Failed to login to {no_payments_account}')
         return
-    counts = 20
     while True:
         now = datetime.now()
         if now >= next_interval:
-            counts -= 1
+            next_interval = (now + timedelta(minutes=5)).replace(microsecond=0)
             city_dict = try_once_free_account(no_payments_account['payment_url'], csrf_token, yatri_session_cookie)
             if not city_dict:
                 # switch account
                 no_payments_account = account_generator()    
                 yatri_session_cookie, session = login(no_payments_account['email'],  no_payments_account['password'])
                 csrf_token = get_cstf(session)
+                next_interval = now # immediately retry
                 
-            next_interval = (now + timedelta(minutes=5)).replace(microsecond=0)
             log(f'Next try at {next_interval}')
         time.sleep(1)
             

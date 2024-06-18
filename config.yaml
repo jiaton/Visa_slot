@@ -1,7 +1,7 @@
 email:
-  sender: sender@gmail.com
-  password: xxxx xxxx xxxx xxxx
-  receiver: receiver@gmail.com
+  sender: j7@gmail.com
+  password: kjpx fcay gunr pwgx
+  receiver: am@gmail.com
 
 urls:
 - city: calgary
@@ -10,10 +10,29 @@ urls:
 - city: vancouver
   url: https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment/days/95.json?appointments\[expedite\]=false
 
+# - city: toronto
+#   url: https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment/days/94.json?appointments\[expedite\]=false
+
+# - city: halifax
+#   url: https://ais.usvisa-info.com/en-ca/niv/schedule/52876573/appointment/days/90.json?appointments[expedite]=false
+
 dates:
-  start_date: 12-09-2023
-  end_date: 12-30-2023
+  start_date: 06-15-2024
+  end_date: 07-30-2024
 
 ais_credentials:
-  email: username
-  password: "&9Z5WiD?yNHJ7tA"
+  email: am@gmail.com
+  password: "&9Z5WiD?yNHR7tA"
+
+no_payments_account_credentials:
+- email: ja@gmail.com
+  password: "9VPpcmAaUJowvRa"
+  payment_url: https://ais.usvisa-info.com/en-ca/niv/schedule/xxx/payment
+
+- email: j7@gmail.com
+  password: "9VPpcmAaUJowvRa"
+  payment_url: https://ais.usvisa-info.com/en-ca/niv/schedule/xxx/payment
+
+- email: jn@gmail.com
+  password: "9VPpcmAaUJowvRa"
+  payment_url: https://ais.usvisa-info.com/en-ca/niv/schedule/xxx/payment
